@@ -12,6 +12,8 @@
   const escape = s => String(s == null ? '' : s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const sample = [[15,8,124,82,70],[16,8,121,79,68],[17,8,125,81,72],[18,8,119,77,66],[19,8,122,80,69],[20,20,120,78,67],[21,8,118,76,64]].map((v,i)=>({id:'demo-'+i,at:new Date(2026,8,v[0],v[1],30).toISOString(),sys:v[2],dia:v[3],pulse:v[4],note:i===6?'После отдыха':i===5?'Вечернее измерение':''}));
   let records = demo ? sample : [];
+  const MAX_CSV_BYTES = 1024 * 1024;
+  let importPreview = null, importPending = false, importError = '', importRequest = 0;
   let page = 'today', days = 7, editId = null, toast = '', storageError = '', confirmDelete = false, readFailed = false;
   if (!demo) {try {const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved){if(!Array.isArray(saved.records)||!saved.records.every(r=>r && typeof r.id==='string' && Number.isInteger(r.sys) && Number.isInteger(r.dia) && Number.isInteger(r.pulse) && Number.isFinite(Date.parse(r.at))))throw new Error('Invalid diary format');records=saved.records;}}catch(e){readFailed=true;storageError='Не удалось прочитать дневник. Сохранение остановлено, чтобы не перезаписать ваши данные. Попробуйте перезапустить приложение.';}}
   function persist(nextRecords=records){if(demo)return true;if(readFailed)return false;try{localStorage.setItem(KEY,JSON.stringify({records:nextRecords}));storageError='';return true;}catch(e){storageError='Не удалось сохранить запись. Возможно, на устройстве закончилось место.';return false;}}
@@ -32,15 +34,99 @@
     return '<svg class="bp-chart" viewBox="0 0 '+width+' '+height+'" role="img" aria-label="Давление по времени: верхнее — сплошная линия, нижнее — пунктирная. Значения в миллиметрах ртутного столба.">'+ticks.map(v=>'<line class="bp-grid" x1="'+left+'" x2="'+right+'" y1="'+y(v)+'" y2="'+y(v)+'"/><text x="0" y="'+(y(v)+4)+'">'+v+'</text>').join('')+line('sys','bp-sys')+line('dia','bp-dia')+labels.map((r,i)=>'<text x="'+x(r).toFixed(1)+'" y="138" text-anchor="'+(labels.length===1?'middle':i===0?'start':i===labels.length-1?'end':'middle')+'">'+escape(new Date(r.at).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'}))+'</text>').join('')+'</svg><div class="bp-chart-legend"><span><i class="bp-line-sample"></i>Верхнее</span><span><i class="bp-line-sample dia"></i>Нижнее</span></div>';
   }
   function row(r){return '<button class="bp-record cursor-interaction" data-edit="'+escape(r.id)+'" aria-label="Изменить измерение '+r.sys+' на '+r.dia+', '+escape(fmtDate(r.at)+' '+fmtTime(r.at))+'"><div><div class="bp-record-time">'+escape(fmtTime(r.at))+'</div><div class="bp-record-note">'+escape(r.note||'Без заметки')+'</div></div><div class="bp-record-values">'+r.sys+' <span class="bp-sub">/</span> '+r.dia+'<div class="bp-record-pulse">'+r.pulse+' уд/мин</div></div></button>';}
-  function header(title){return '<header class="bp-top"><div><div class="bp-title-small">МОЙ ЛИЧНЫЙ ДНЕВНИК</div><h1>'+title+'</h1></div><button class="bp-mark cursor-interaction" data-page="settings" aria-label="Данные и экспорт">♡</button></header>';}
+  function header(title){return '<header class="bp-top"><div><div class="bp-title-small">МОЙ ЛИЧНЫЙ ДНЕВНИК</div><h1>'+title+'</h1></div><button class="bp-mark cursor-interaction" data-page="settings" aria-label="Данные, импорт и экспорт">♡</button></header>';}
   function latest(r){return '<div class="bp-latest"><div class="bp-latest-top"><span class="bp-overline">Последнее измерение</span><span class="bp-small bp-sub"><i class="bp-dot"></i>'+escape(fmtTime(r.at))+'</span></div><div class="bp-reading">'+r.sys+'<span class="bp-slash">/</span>'+r.dia+'</div><div class="bp-reading-unit">мм рт. ст.</div><div class="bp-pulse-row"><div><span class="bp-heart" aria-hidden="true">♡</span><span class="bp-pulse">'+r.pulse+'</span><span class="bp-pulse-unit">уд/мин</span></div><span class="bp-time">'+escape(fmtDate(r.at))+'</span></div></div>';}
   function today(){const sorted=D.sortRecords(records),last=sorted[0],recent=D.periodRecords(records,7,now());return header('Дневник давления')+'<div class="bp-toolbar"><h2>Сегодня</h2><span class="bp-date">'+escape(fmtDate(now()))+'</span></div>'+(last?latest(last):'<div class="bp-empty"><h2>Начнём с измерения</h2><p>Запишите давление и пульс. Вся история останется под рукой.</p></div>')+'<button class="bp-primary cursor-interaction" data-add><span class="bp-plus" aria-hidden="true">+</span>Записать измерение</button>'+(last?'<section class="bp-section"><div class="bp-section-heading"><h3>Последние 7 дней</h3><button class="bp-text-button cursor-interaction" data-page="trends">Динамика ↗</button></div><div class="bp-chart-panel"><div class="bp-chart-heading"><span>Давление, мм рт. ст.</span><span>'+recent.length+' изм.</span></div>'+chart(recent)+'</div></section><section class="bp-section"><div class="bp-section-heading"><h3>Последние записи</h3><button class="bp-text-button cursor-interaction" data-page="history">Все записи →</button></div>'+sorted.slice(0,2).map(row).join('')+'</section>':'<p class="bp-banner">Без аккаунта. Данные только на устройстве.</p>');}
   function history(){let current='';return header('История')+'<div class="bp-toolbar"><span class="bp-sub bp-small">Измерений: '+records.length+'</span><button class="bp-text-button cursor-interaction" data-export '+(!records.length?'disabled':'')+'>Экспорт CSV ↗</button></div><button class="bp-primary cursor-interaction" data-add><span class="bp-plus" aria-hidden="true">+</span>Записать измерение</button>'+(!records.length?'<div class="bp-empty"><p>Ваши измерения появятся здесь</p></div>':D.sortRecords(records).map(r=>{const d=new Date(r.at).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});const head=d===current?'':'<div class="bp-group-date">'+escape(d)+'</div>';current=d;return head+row(r);}).join(''));}
   function trends(){const data=D.periodRecords(records,days,now()),sum=D.summarize(data);return header('Динамика')+'<div class="bp-range" aria-label="Период графика">'+[7,30,90].map(n=>'<button class="cursor-interaction" data-days="'+n+'" aria-pressed="'+(days===n)+'">'+n+' дней</button>').join('')+'</div>'+(data.length?'<div class="bp-average"><div><strong>'+sum.sys+' / '+sum.dia+'</strong><p>Среднее давление, мм рт. ст.</p></div><div><strong>'+sum.pulse+'</strong><p>Пульс, уд/мин</p></div></div>':'')+'<div class="bp-chart-panel"><div class="bp-chart-heading"><span>Давление, мм рт. ст.</span><span>'+data.length+' изм.</span></div>'+chart(data)+'</div><div class="bp-settings-note">Средние значения рассчитаны по записям за выбранный период.</div><section class="bp-section"><div class="bp-section-heading"><h3>Измерения за период</h3></div>'+D.sortRecords(data).slice(0,10).map(r=>'<div class="bp-small bp-sub">'+escape(fmtDate(r.at))+'</div>'+row(r)).join('')+'</section>';}
-  function settings(){return header('Ваши данные')+'<section class="bp-section"><h3>Резервная копия</h3><button class="bp-secondary cursor-interaction" data-export '+(!records.length?'disabled':'')+'>Сохранить историю в CSV</button><p class="bp-settings-note">Дневник работает без интернета и хранит записи на этом устройстве. При удалении приложения записи удаляются. Экспортируйте историю, чтобы сохранить копию.</p><p class="bp-settings-note">Дневник давления · 1.0.1<br>Для записи измерений, без автоматической оценки здоровья.</p></section>';}
+  function settings(){
+    return header('Ваши данные')+
+      '<section class="bp-section"><h3>Перенос записей</h3>'+
+      '<button class="bp-primary bp-import-start cursor-interaction" data-import '+(readFailed?'disabled':'')+'>Импортировать CSV</button>'+
+      '<button class="bp-secondary cursor-interaction" data-export '+(!records.length?'disabled':'')+'>Сохранить историю в CSV</button>'+
+      '<p class="bp-settings-note">Выберите файл, проверьте записи и подтвердите добавление. Повторные измерения будут пропущены.</p>'+
+      '<details class="bp-csv-help"><summary>Поддерживаемый формат</summary>'+
+      '<p>CSV в UTF-8, до 1 МиБ и 5 000 измерений. Разделитель: точка с запятой, запятая или табуляция.</p>'+
+      '<p>Колонки: Дата, Время, Верхнее, Нижнее, Пульс; Заметка — необязательно. Подойдут также date, time, systolic, diastolic, pulse, note.</p>'+
+      '<p>Дата: ДД.ММ.ГГГГ или ГГГГ-ММ-ДД. Время: ЧЧ:ММ, можно с секундами. Вместо даты и времени допустима колонка timestamp с датой и временем ISO 8601.</p></details>'+
+      '<p class="bp-settings-note">Дневник работает без интернета и хранит записи на этом устройстве. При удалении приложения записи удаляются. Экспортируйте историю, чтобы сохранить копию.</p>'+
+      '<p class="bp-settings-note">Дневник давления · 1.1.0<br>Для записи измерений, без автоматической оценки здоровья.</p></section>';
+  }
+  function importPage(){
+    let content='<div class="bp-form-top"><button class="bp-back cursor-interaction" data-import-cancel>← Назад</button><span class="bp-small bp-sub">Перенос записей</span></div><h1>Импорт CSV</h1>';
+    if(importPending)return content+'<p class="bp-settings-note" role="status">Выбираем и проверяем файл…</p><input type="file" data-import-file accept=".csv,.tsv,text/csv,text/tab-separated-values,text/plain,application/csv" hidden><button class="bp-secondary cursor-interaction" data-import-cancel>Отмена</button>';
+    if(importError)content+='<p class="bp-error bp-import-status" role="alert">'+escape(importError)+'</p>';
+    if(importPreview){
+      const result=importPreview.result;
+      content+='<p class="bp-import-filename">'+escape(importPreview.name)+'</p>';
+      if(!result.ok){
+        content+='<p class="bp-import-status">Файл не импортирован. Исправьте ошибки и выберите его заново.</p><ul class="bp-import-errors">'+result.errors.slice(0,10).map(e=>'<li>'+ (e.line?'Строка '+e.line+': ':'')+escape(e.message)+'</li>').join('')+'</ul>';
+        if(result.errors.length>10)content+='<p class="bp-small bp-sub">Ещё ошибок: '+(result.errors.length-10)+'</p>';
+      }else{
+        content+='<p class="bp-import-summary" role="status">Новых: <strong>'+result.records.length+'</strong> · Повторов: <strong>'+result.duplicates+'</strong></p>';
+        if(!result.records.length)content+='<p class="bp-settings-note">Новых измерений нет. Записи из файла уже есть в дневнике.</p>';
+        else{
+          content+='<ol class="bp-import-list">'+D.sortRecords(result.records).slice(0,5).map(r=>'<li><div class="bp-small bp-sub">'+escape(new Date(r.at).toLocaleDateString('ru-RU')+' · '+fmtTime(r.at))+'</div><div class="bp-import-values"><strong>'+r.sys+' / '+r.dia+'</strong><span>'+r.pulse+' уд/мин</span></div>'+(r.note?'<p class="bp-import-note">'+escape(r.note.length>120?r.note.slice(0,120)+'…':r.note)+'</p>':'')+'</li>').join('')+'</ol>';
+          if(result.records.length>5)content+='<p class="bp-small bp-sub">Показаны 5 из '+result.records.length+' новых измерений.</p>';
+          content+='<p class="bp-settings-note">Добавятся только новые измерения. Существующие записи сохранятся.</p><button class="bp-primary bp-import-confirm cursor-interaction" data-import-confirm>Добавить измерения: '+result.records.length+'</button>';
+        }
+      }
+    }
+    return content+'<button class="bp-secondary cursor-interaction" data-import>Выбрать другой файл</button>';
+  }
+  function cancelImport(){
+    importRequest++;importPending=false;importPreview=null;importError='';page='settings';render();
+  }
+  function requestImport(){
+    if(readFailed){page='settings';render();return;}
+    const requestId=String(++importRequest);
+    importPreview=null;importError='';importPending=true;toast='';page='import';render();
+    try{
+      if(window.Android?.importCsv){window.Android.importCsv(requestId);return;}
+      const input=root.querySelector('[data-import-file]');
+      input.addEventListener('cancel',()=>window.pressureReceiveCsv({requestId,cancelled:true}),{once:true});
+      input.click();
+    }catch(e){window.pressureReceiveCsv({requestId,error:'Не удалось открыть выбор файла. Попробуйте ещё раз.'});}
+  }
+  window.pressureReceiveCsv=payload=>{
+    if(!payload||!importPending||String(payload.requestId)!==String(importRequest))return;
+    importPending=false;
+    if(payload.cancelled){cancelImport();return;}
+    if(payload.error){importError=String(payload.error);render();return;}
+    if(typeof payload.text!=='string'){importError='Не удалось прочитать CSV.';render();return;}
+    try{
+      importPreview={name:String(payload.name||'CSV-файл').slice(0,255),text:payload.text,result:D.importCsv(payload.text,records,now())};
+    }catch(e){importError='Не удалось разобрать CSV. Проверьте формат файла.';importPreview=null;}
+    render();
+  };
+  root.addEventListener('change',e=>{
+    if(!e.target.matches('[data-import-file]'))return;
+    const requestId=String(importRequest),file=e.target.files?.[0];
+    if(!file){window.pressureReceiveCsv({requestId,cancelled:true});return;}
+    if(file.size>MAX_CSV_BYTES){window.pressureReceiveCsv({requestId,error:'Файл больше 1 МиБ. Выберите файл меньшего размера.'});return;}
+    const reader=new FileReader();
+    reader.onerror=()=>window.pressureReceiveCsv({requestId,error:'Не удалось прочитать файл. Выберите его ещё раз.'});
+    reader.onload=()=>{
+      try{
+        const text=new TextDecoder('utf-8',{fatal:true}).decode(reader.result);
+        window.pressureReceiveCsv({requestId,name:file.name,text});
+      }catch(e){window.pressureReceiveCsv({requestId,error:'Нужен CSV в кодировке UTF-8. Сохраните файл в UTF-8 и повторите импорт.'});}
+    };
+    reader.readAsArrayBuffer(file);
+  });
+  function confirmImport(){
+    if(!importPreview||importPending||readFailed)return;
+    const result=D.importCsv(importPreview.text,records,now());
+    importPreview.result=result;
+    if(!result.ok||!result.records.length){render();return;}
+    const next=records.concat(result.records);
+    if(!persist(next)){importError=storageError;render();return;}
+    records=next;toast='Добавлено измерений: '+result.records.length+(result.duplicates?'. Пропущено повторов: '+result.duplicates:'');
+    importPreview=null;importError='';importRequest++;page='history';render();
+  }
   function form(){const r=records.find(r=>r.id===editId);return '<div class="bp-form-top"><button class="bp-back cursor-interaction" data-cancel>← Назад</button><span class="bp-small bp-sub">'+(r?'Изменить запись':'Новое измерение')+'</span></div><h1>'+ (r?'Ваша запись':'Какое давление?')+'</h1><p class="bp-sub bp-small" style="margin:10px 0 25px">Показания с экрана вашего тонометра</p><form class="bp-form" novalidate><div class="bp-form-grid"><label class="bp-field">Верхнее, мм рт. ст.<input name="sys" type="number" inputmode="numeric" min="50" max="300" step="1" placeholder="120" required value="'+(r?r.sys:'')+'"><span class="bp-field-hint" data-error="sys"></span></label><label class="bp-field">Нижнее, мм рт. ст.<input name="dia" type="number" inputmode="numeric" min="30" max="200" step="1" placeholder="80" required value="'+(r?r.dia:'')+'"><span class="bp-field-hint" data-error="dia"></span></label></div><label class="bp-field">Пульс, уд/мин<input name="pulse" type="number" inputmode="numeric" min="20" max="250" step="1" placeholder="70" required value="'+(r?r.pulse:'')+'"><span class="bp-field-hint" data-error="pulse"></span></label><label class="bp-field">Дата и время<input name="at" type="datetime-local" required value="'+localInput(r?r.at:now())+'"><span class="bp-field-hint" data-error="at"></span></label><label class="bp-field">Заметка · необязательно<textarea name="note" maxlength="500" placeholder="Например, после прогулки">'+escape(r?r.note:'')+'</textarea></label><div class="bp-error" role="alert" data-form-error></div><button class="bp-primary cursor-interaction" type="submit">'+(r?'Сохранить изменения':'Сохранить измерение')+'</button></form>'+(r?'<button class="bp-delete cursor-interaction" data-delete>Удалить запись</button>':'');}
   function nav(){return '<nav class="bp-nav" aria-label="Основная навигация">'+[['today','⌂','Сегодня'],['history','≡','История'],['trends','↗','Динамика'],['settings','≡','Данные']].map(([id,glyph,label])=>'<button class="cursor-interaction" data-page="'+id+'" '+(page===id?'aria-current="page"':'')+'><span class="bp-nav-glyph" aria-hidden="true">'+glyph+'</span>'+label+'</button>').join('')+'</nav>';}
-  function render(){const functions={today,history,trends,settings,form};root.innerHTML='<div class="bp-shell">'+(demo?'<div class="bp-demo" style="padding-top:14px">Демонстрационные данные</div>':'')+(storageError?'<p class="bp-error" role="alert" style="padding-top:15px">'+escape(storageError)+'</p>':'')+(toast?'<div class="bp-toast" role="status">'+escape(toast)+'</div>':'')+functions[page]()+((page==='form'&&confirmDelete)?'<div class="bp-confirm" role="alert"><p>Удалить это измерение?</p><button class="bp-secondary cursor-interaction" data-keep>Оставить запись</button><button class="bp-primary cursor-interaction" data-confirm-delete>Удалить измерение</button></div>':'')+(page==='form'?'':nav())+'</div>'; }
+  function render(){const functions={today,history,trends,settings,form,import:importPage};root.innerHTML='<div class="bp-shell">'+(demo?'<div class="bp-demo" style="padding-top:14px">Демонстрационные данные</div>':'')+(storageError?'<p class="bp-error" role="alert" style="padding-top:15px">'+escape(storageError)+'</p>':'')+(toast?'<div class="bp-toast" role="status">'+escape(toast)+'</div>':'')+functions[page]()+((page==='form'&&confirmDelete)?'<div class="bp-confirm" role="alert"><p>Удалить это измерение?</p><button class="bp-secondary cursor-interaction" data-keep>Оставить запись</button><button class="bp-primary cursor-interaction" data-confirm-delete>Удалить измерение</button></div>':'')+(page==='form'||page==='import'?'':nav())+'</div>'; }
   root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
     if(b.dataset.page){page=b.dataset.page;toast='';confirmDelete=false;render();rememberView();}
     else if(b.hasAttribute('data-add')){editId=null;page='form';toast='';confirmDelete=false;render();}
@@ -48,6 +134,9 @@
     else if(b.hasAttribute('data-cancel')){page='today';confirmDelete=false;render();}
     else if(b.dataset.days){days=Number(b.dataset.days);render();rememberView();}
     else if(b.hasAttribute('data-export')){exportCsv();}
+    else if(b.hasAttribute('data-import')){requestImport();}
+    else if(b.hasAttribute('data-import-cancel')){cancelImport();}
+    else if(b.hasAttribute('data-import-confirm')){confirmImport();}
     else if(b.hasAttribute('data-delete')){if(!confirmDelete){confirmDelete=true;root.querySelector('.bp-shell').insertAdjacentHTML('beforeend','<div class="bp-confirm" role="alert"><p>Удалить это измерение?</p><button class="bp-secondary cursor-interaction" data-keep>Оставить запись</button><button class="bp-primary cursor-interaction" data-confirm-delete>Удалить измерение</button></div>');}root.querySelector('[data-keep]')?.focus();}
     else if(b.hasAttribute('data-keep')){confirmDelete=false;root.querySelector('.bp-confirm')?.remove();}
     else if(b.hasAttribute('data-confirm-delete')){const next=records.filter(r=>r.id!==editId);if(persist(next)){records=next;page='history';editId=null;confirmDelete=false;toast='Измерение удалено';}render();}
@@ -55,7 +144,7 @@
   root.addEventListener('submit',e=>{e.preventDefault();const f=e.target;const input=Object.fromEntries(new FormData(f));if(editId)input.id=editId;const result=D.validate(input,now());['sys','dia','pulse','at'].forEach(k=>{const el=f.elements[k];el.setAttribute('aria-invalid',String(!!result.errors[k]));const hint=f.querySelector('[data-error="'+k+'"]');hint.textContent=result.errors[k]||'';hint.classList.toggle('bp-error',!!result.errors[k]);});if(!result.ok){f.querySelector('[data-form-error]').textContent='Проверьте выделенные поля.';f.querySelector('[aria-invalid=true]')?.focus();return;}const next=[...records.filter(r=>r.id!==result.record.id),result.record];if(!persist(next)){f.querySelector('[data-form-error]').textContent=storageError;return;}records=next;page='today';toast=editId?'Изменения сохранены':'Измерение сохранено';editId=null;render();});
   function exportCsv(){if(!records.length)return;if(demo){toast='В приложении история сохраняется в CSV. Здесь показан пример интерфейса.';render();return;}const csv=D.toCsv(records);if(window.Android?.saveCsv){window.Android.saveCsv(csv);return;}const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='дневник-давления.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
   root.pressureDiary={getState:()=>({page,count:records.length})};
-  window.pressureBack=()=>{if(page!=='today'){page='today';editId=null;confirmDelete=false;render();return true;}return false;};
+  window.pressureBack=()=>{if(page==='import'){cancelImport();return true;}if(page!=='today'){page='today';editId=null;confirmDelete=false;render();return true;}return false;};
   render();
   let lastWidth=root.clientWidth;
   if(globalThis.ResizeObserver)new ResizeObserver(()=>{if(lastWidth!==root.clientWidth){lastWidth=root.clientWidth;if(page==='today'||page==='trends')render();}}).observe(root);

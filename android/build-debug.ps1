@@ -63,7 +63,7 @@ $debugKeystore = Join-Path $keyDir 'debug.keystore'
 Invoke-BuildTool $aapt2 @('compile', '--dir', (Join-Path $sourceDir 'res'), '-o', $resourcesZip)
 Invoke-BuildTool $aapt2 @('link', '-o', $unsignedApk, '-I', $androidJar, '--manifest', $manifestPath,
     '--java', $generatedDir, '--min-sdk-version', '26', '--target-sdk-version', '36',
-    '--version-code', '2', '--version-name', '1.0.1', '--debug-mode', '--auto-add-overlay', '-A', $assetDir, '-R', $resourcesZip)
+    '--version-code', '3', '--version-name', '1.1.0', '--debug-mode', '--auto-add-overlay', '-A', $assetDir, '-R', $resourcesZip)
 
 $javaSources = @(Get-ChildItem -LiteralPath (Join-Path $sourceDir 'java'), $generatedDir -Recurse -Filter '*.java' | ForEach-Object { $_.FullName })
 Invoke-BuildTool $javac (@('-encoding', 'UTF-8', '--release', '8', '-classpath', $androidJar, '-d', $classDir) + $javaSources)
