@@ -1,0 +1,5 @@
+/outputs/*
+!/outputs/pressure-diary.apk
+*.log
+*.keystore
+*.jks

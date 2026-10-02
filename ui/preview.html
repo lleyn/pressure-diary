@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Дневник давления</title><style>body{margin:0;padding:28px 16px;background:#ebece8;color-scheme:light}</style></head><body>
+<div id="bp-concepts" aria-label="Дневник давления">
+  <div class="bp-device">
+    <div class="bp-device-bar" aria-hidden="true"><span>9:41</span><span class="bp-camera"></span><span>▴ &nbsp; ▰</span></div>
+    <main id="pressure-app" data-demo="true" aria-label="Интерактивный пример Дневника давления"></main>
+    <div class="bp-device-foot" aria-hidden="true"><span></span></div>
+  </div>
+</div>
+<style>
+#pressure-app *{box-sizing:border-box}#pressure-app button,#pressure-app input,#pressure-app textarea,#pressure-app select{font:inherit}#pressure-app button{touch-action:manipulation}
+#pressure-app{--bp-bg:#f4f7f4;--bp-panel:#fff;--bp-ink:#20352d;--bp-sub:#67756d;--bp-line:#dee5de;--bp-accent:#315e49;--bp-on:#fff;--bp-soft:#e5eee7;--bp-second:#9b7762;--bp-radius:24px;min-height:100dvh;background:var(--bp-bg);color:var(--bp-ink);font-family:Arial,"Segoe UI",sans-serif;font-size:15px;line-height:1.45;color-scheme:light;-webkit-tap-highlight-color:transparent}
+
+
+#pressure-app button{color:inherit;border:0;background:none}#pressure-app button:disabled{opacity:.5}#pressure-app h1,#pressure-app h2,#pressure-app h3,#pressure-app p{margin:0}#pressure-app h1{font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-1px}#pressure-app h2{font-size:20px;line-height:1.3;font-weight:600;letter-spacing:-.4px}#pressure-app h3{font-size:15px;font-weight:600}#pressure-app .bp-sub{color:var(--bp-sub)}#pressure-app .bp-small{font-size:12px}#pressure-app .bp-shell{max-width:520px;min-height:100dvh;margin:auto;position:relative;padding:0 22px 102px}#pressure-app .bp-top{padding:26px 0 24px;display:flex;align-items:center;justify-content:space-between;gap:10px}#pressure-app .bp-title-small{font-size:12px;letter-spacing:.04em;color:var(--bp-sub);margin-bottom:7px}#pressure-app .bp-mark{width:43px;height:43px;border:1px solid var(--bp-line);border-radius:50%;display:grid;place-items:center;font-size:20px;color:var(--bp-accent);flex-shrink:0}#pressure-app .bp-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}#pressure-app .bp-toolbar .bp-date{font-size:13px;color:var(--bp-sub)}#pressure-app .bp-demo{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--bp-sub)}#pressure-app .bp-latest{background:var(--bp-panel);border-radius:var(--bp-radius);padding:23px 23px 21px;margin-bottom:16px}#pressure-app .bp-overline{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--bp-sub)}#pressure-app .bp-latest-top{display:flex;align-items:center;justify-content:space-between;gap:8px}#pressure-app .bp-dot{width:6px;height:6px;background:var(--bp-accent);border-radius:50%;display:inline-block;margin-right:6px}#pressure-app .bp-reading{font-size:58px;font-weight:500;line-height:1.18;letter-spacing:-3px;font-variant-numeric:tabular-nums;white-space:nowrap;margin-top:16px}#pressure-app .bp-reading .bp-slash{font-size:38px;font-weight:400;color:var(--bp-sub);padding:0 5px}#pressure-app .bp-reading-unit{font-size:12px;color:var(--bp-sub);margin-top:4px}#pressure-app .bp-pulse-row{border-top:1px solid var(--bp-line);margin-top:22px;padding-top:15px;display:flex;justify-content:space-between;align-items:center;gap:10px}#pressure-app .bp-heart{color:var(--bp-accent);font-size:18px;margin-right:7px}#pressure-app .bp-pulse{font-size:18px;font-variant-numeric:tabular-nums}#pressure-app .bp-pulse-unit{font-size:12px;color:var(--bp-sub);margin-left:4px}#pressure-app .bp-time{font-size:12px;color:var(--bp-sub)}#pressure-app .bp-primary{background:var(--bp-accent);color:var(--bp-on);border-radius:16px;min-height:54px;width:100%;padding:13px 16px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px}#pressure-app .bp-plus{font-size:23px;font-weight:400;line-height:1}#pressure-app .bp-section{margin-top:27px}#pressure-app .bp-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}#pressure-app .bp-text-button{font-size:12px;color:var(--bp-accent);min-height:38px;padding:6px 0 6px 12px}#pressure-app .bp-chart-panel{background:var(--bp-panel);padding:18px 16px 10px;border-radius:var(--bp-radius)}#pressure-app .bp-chart-heading{font-size:12px;color:var(--bp-sub);display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}#pressure-app .bp-chart{display:block;width:100%;height:145px;overflow:visible}#pressure-app .bp-chart text{font-family:Arial,"Segoe UI",sans-serif;font-size:11px;fill:var(--bp-sub)}#pressure-app .bp-chart .bp-grid{stroke:var(--bp-line);stroke-width:1}#pressure-app .bp-chart .bp-sys{stroke:var(--bp-accent);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}#pressure-app .bp-chart .bp-dia{stroke:var(--bp-second);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:4 4}#pressure-app .bp-chart-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--bp-sub);margin:5px 0 0}#pressure-app .bp-chart-legend span{display:flex;align-items:center;gap:6px}#pressure-app .bp-line-sample{display:inline-block;width:15px;border-top:2px solid var(--bp-accent)}#pressure-app .bp-line-sample.dia{border-top:2px dashed var(--bp-second)}#pressure-app .bp-record{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--bp-line);padding:15px 0;width:100%;text-align:left}#pressure-app .bp-record:last-child{border-bottom:0}#pressure-app .bp-record-time{font-size:13px}#pressure-app .bp-record-note{font-size:11px;color:var(--bp-sub);margin-top:3px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#pressure-app .bp-record-values{text-align:right;font-size:19px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}#pressure-app .bp-record-pulse{font-size:11px;color:var(--bp-sub);font-weight:400;margin-top:3px}#pressure-app .bp-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;display:flex;justify-content:space-around;padding:10px 10px max(12px,env(safe-area-inset-bottom));background:var(--bp-bg);border-top:1px solid var(--bp-line);z-index:5}#pressure-app .bp-nav button{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;min-height:48px;min-width:62px;color:var(--bp-sub);padding:3px 8px}#pressure-app .bp-nav button[aria-current=page]{color:var(--bp-accent)}#pressure-app .bp-nav-glyph{height:25px;min-width:45px;border-radius:15px;font-size:19px;line-height:25px;font-family:"Segoe UI Symbol",sans-serif}#pressure-app .bp-nav button[aria-current=page] .bp-nav-glyph{background:var(--bp-soft)}#pressure-app .bp-empty{padding:44px 12px;text-align:center;color:var(--bp-sub)}#pressure-app .bp-empty h2{color:var(--bp-ink);margin-bottom:9px}#pressure-app .bp-empty p{max-width:270px;margin:0 auto 20px;font-size:13px}#pressure-app .bp-quote{display:none}#pressure-app .bp-month{display:none}
+
+
+#pressure-app .bp-range{display:flex;background:var(--bp-soft);border-radius:12px;padding:4px;margin:0 0 22px;gap:4px}#pressure-app .bp-range button{flex:1;min-height:38px;font-size:13px;border-radius:9px;color:var(--bp-sub)}#pressure-app .bp-range button[aria-pressed=true]{background:var(--bp-panel);color:var(--bp-ink)}#pressure-app .bp-average{padding:20px 0 23px;display:flex;justify-content:space-between;align-items:center}#pressure-app .bp-average strong{font-size:29px;font-weight:500;letter-spacing:-1px}#pressure-app .bp-average p{font-size:12px;color:var(--bp-sub);margin-top:4px}#pressure-app .bp-group-date{color:var(--bp-sub);font-size:12px;margin-top:24px;padding-bottom:6px;border-bottom:1px solid var(--bp-line)}#pressure-app .bp-settings-note{font-size:12px;color:var(--bp-sub);line-height:1.65;margin-top:22px}#pressure-app .bp-secondary{border:1px solid var(--bp-line);border-radius:12px;min-height:48px;padding:11px 15px;font-size:13px;width:100%;background:var(--bp-panel);margin-top:10px}#pressure-app .bp-banner{margin-top:14px;color:var(--bp-sub);font-size:12px;text-align:center}#pressure-app .bp-form{padding:6px 0 0}#pressure-app .bp-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}#pressure-app .bp-field{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;font-size:12px;color:var(--bp-sub);min-width:0}#pressure-app .bp-field input,#pressure-app .bp-field textarea{width:100%;min-width:0;border:1px solid var(--bp-line);background:var(--bp-panel);color:var(--bp-ink);border-radius:12px;padding:14px 12px;font-size:16px;min-height:52px}#pressure-app .bp-field input[type=number]{font-size:30px;font-variant-numeric:tabular-nums;height:79px}#pressure-app .bp-field textarea{resize:vertical;min-height:84px}#pressure-app .bp-field input[aria-invalid=true]{border-color:#bc6556}#pressure-app .bp-field-hint{font-size:11px;min-height:0}#pressure-app .bp-error{color:#b74e38;font-size:12px;margin-bottom:12px}#pressure-app .bp-form-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}#pressure-app .bp-delete{color:var(--bp-sub);font-size:12px;min-height:44px;margin:12px auto 0;display:block;text-decoration:underline}#pressure-app .bp-confirm{padding:20px 0;text-align:center}#pressure-app .bp-confirm p{margin-bottom:18px;font-size:14px}#pressure-app .bp-confirm .bp-secondary{margin-bottom:10px}#pressure-app .bp-back{min-height:44px;font-size:14px;color:var(--bp-sub);padding:0}#pressure-app .bp-form-top{display:flex;align-items:center;justify-content:space-between;padding:14px 0 20px}#pressure-app .bp-note-display{color:var(--bp-sub);font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:12px}#pressure-app .bp-field-full{grid-column:1/-1}#pressure-app .bp-toast{padding:11px 14px;background:var(--bp-soft);color:var(--bp-ink);border-radius:12px;margin-bottom:15px;font-size:13px}
+@media(max-width:350px){#pressure-app .bp-shell{padding-left:16px;padding-right:16px}#pressure-app .bp-reading{font-size:51px}#pressure-app h1{font-size:24px}#pressure-app .bp-latest{padding:20px 18px}#pressure-app .bp-form-grid{gap:10px}}
+@media(prefers-reduced-motion:no-preference){#pressure-app .bp-primary:active{transform:scale(.985)}}
+
+#bp-concepts{font-family:Arial,"Segoe UI",sans-serif;padding:4px 0 12px}
+#bp-concepts *{box-sizing:border-box}
+#bp-concepts .bp-device{max-width:380px;margin:auto;overflow:hidden;border:1px solid #a9b1a8;border-radius:34px;background:#f4f7f4;box-shadow:0 14px 34px #10201914}
+#bp-concepts .bp-device-bar{display:flex;justify-content:space-between;align-items:center;padding:13px 25px 3px;font-size:12px;font-weight:600;height:36px;color:#20352d;background:#f4f7f4}
+#bp-concepts .bp-camera{display:block;width:9px;height:9px;border-radius:50%;background:#26302b}
+#bp-concepts .bp-device-foot{height:19px;display:flex;align-items:center;justify-content:center;background:#f4f7f4}
+#bp-concepts .bp-device-foot span{height:4px;width:92px;background:#20352d;border-radius:5px}
+#bp-concepts #pressure-app{min-height:0}
+#bp-concepts #pressure-app .bp-shell{min-height:0;padding-bottom:0}
+#bp-concepts #pressure-app .bp-top{padding-top:18px}
+#bp-concepts #pressure-app .bp-nav{position:static;transform:none;width:auto;max-width:none;margin:22px -22px 0;padding-bottom:6px}
+#bp-concepts #pressure-app .bp-section{margin-top:19px}
+#bp-concepts #pressure-app .bp-record{padding:12px 0}
+#bp-concepts #pressure-app .bp-chart{height:130px}
+#bp-concepts #pressure-app .bp-form{padding-bottom:24px}
+#bp-concepts #pressure-app .bp-demo{font-size:10px;letter-spacing:.09em}
+@media(max-width:350px){#bp-concepts .bp-device{border-radius:26px}#bp-concepts #pressure-app .bp-nav{margin-left:-16px;margin-right:-16px}}
+</style>
+<script>
+(function (root, factory) {
+  "use strict";
+  var api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api;
+  root.PressureData = api;
+})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+  "use strict";
+
+  function integer(value) {
+    if (typeof value === "number") return Number.isInteger(value) ? value : NaN;
+    if (typeof value !== "string" || !/^\d+$/.test(value.trim())) return NaN;
+    var parsed = Number(value.trim());
+    return Number.isSafeInteger(parsed) ? parsed : NaN;
+  }
+
+  function parseDate(value) {
+    if (value instanceof Date) {
+      return Number.isFinite(value.getTime()) ? new Date(value.getTime()) : null;
+    }
+    if (typeof value !== "string") return null;
+    // Validate calendar components before parsing: Date alone accepts 30 February.
+    var match = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?(Z|[+-]\d{2}:\d{2})?)?$/.exec(value.trim());
+    if (!match) return null;
+    var year = Number(match[1]);
+    var month = Number(match[2]);
+    var day = Number(match[3]);
+    var leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    var monthLengths = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (year < 1 || month < 1 || month > 12 || day < 1 || day > monthLengths[month - 1]) return null;
+    if (Number(match[4] || 0) > 23 || Number(match[5] || 0) > 59 || Number(match[6] || 0) > 59) return null;
+    var date = new Date(value.trim());
+    if (!Number.isFinite(date.getTime())) return null;
+    // Reject nonexistent local times at a daylight-saving transition.
+    if (match[4] && !match[8] && (date.getFullYear() !== year || date.getMonth() !== month - 1 ||
+        date.getDate() !== day || date.getHours() !== Number(match[4]) || date.getMinutes() !== Number(match[5]))) return null;
+    return date;
+  }
+
+  function newId() {
+    if (typeof globalThis !== "undefined" && globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+      return globalThis.crypto.randomUUID();
+    }
+    return "reading-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+  }
+
+  function validate(input, now) {
+    input = input || {};
+    now = now === undefined ? new Date() : new Date(now);
+    var errors = {};
+    var sys = integer(input.sys);
+    var dia = integer(input.dia);
+    var pulse = integer(input.pulse);
+    // These limits constrain data entry; they are not clinical classifications.
+    if (!Number.isFinite(sys) || sys < 50 || sys > 300) errors.sys = "Введите целое число от 50 до 300.";
+    if (!Number.isFinite(dia) || dia < 30 || dia > 200) errors.dia = "Введите целое число от 30 до 200.";
+    if (!Number.isFinite(pulse) || pulse < 20 || pulse > 250) errors.pulse = "Введите целое число от 20 до 250.";
+    if (!errors.sys && !errors.dia && dia >= sys) errors.dia = "Нижнее давление должно быть меньше верхнего.";
+    var at = parseDate(input.at);
+    if (!at) errors.at = "Укажите корректные дату и время.";
+    else if (!Number.isFinite(now.getTime()) || at.getTime() > now.getTime() + 60000) errors.at = "Дата и время не могут быть в будущем.";
+    var note = input.note == null ? "" : input.note;
+    if (typeof note !== "string") errors.note = "Введите заметку текстом.";
+    else if (note.length > 500) errors.note = "Заметка должна содержать не более 500 символов.";
+    if (Object.keys(errors).length) return { ok: false, errors: errors };
+    return {
+      ok: true,
+      errors: {},
+      record: {
+        id: typeof input.id === "string" && input.id.trim() ? input.id : newId(),
+        sys: sys,
+        dia: dia,
+        pulse: pulse,
+        at: at.toISOString(),
+        note: note
+      }
+    };
+  }
+
+  function sortRecords(records) {
+    return records.slice().sort(function (a, b) { return new Date(b.at).getTime() - new Date(a.at).getTime(); });
+  }
+
+  function summarize(records) {
+    if (!records.length) return { count: 0, sys: null, dia: null, pulse: null };
+    var total = records.reduce(function (sum, record) {
+      sum.sys += record.sys;
+      sum.dia += record.dia;
+      sum.pulse += record.pulse;
+      return sum;
+    }, { sys: 0, dia: 0, pulse: 0 });
+    return {
+      count: records.length,
+      sys: Math.round(total.sys / records.length),
+      dia: Math.round(total.dia / records.length),
+      pulse: Math.round(total.pulse / records.length)
+    };
+  }
+
+  function periodRecords(records, days, now) {
+    now = now === undefined ? new Date() : new Date(now);
+    if (!Number.isInteger(days) || days < 1 || !Number.isFinite(now.getTime())) return [];
+    var start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    start.setDate(start.getDate() - days + 1);
+    var end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    return sortRecords(records.filter(function (record) {
+      var at = new Date(record.at).getTime();
+      return at >= start.getTime() && at < end.getTime();
+    }));
+  }
+
+  function pad(value) { return String(value).padStart(2, "0"); }
+
+  function csvCell(value) {
+    var text = String(value);
+    return /[;"\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+  }
+
+  function safeNote(note) {
+    var text = note == null ? "" : String(note);
+    // Excel and other spreadsheet readers may interpret these prefixes as formulas.
+    if (/^[\s\u0000-\u001f]*[=+\-@]/.test(text) || /^[\t\r\n]/.test(text)) text = "'" + text;
+    return text;
+  }
+
+  function toCsv(records) {
+    var rows = ["Дата;Время;Верхнее;Нижнее;Пульс;Заметка"];
+    sortRecords(records).forEach(function (record) {
+      var at = new Date(record.at);
+      rows.push([
+        pad(at.getDate()) + "." + pad(at.getMonth() + 1) + "." + at.getFullYear(),
+        pad(at.getHours()) + ":" + pad(at.getMinutes()),
+        record.sys, record.dia, record.pulse, safeNote(record.note)
+      ].map(csvCell).join(";"));
+    });
+    return "\uFEFF" + rows.join("\r\n") + "\r\n";
+  }
+
+  return Object.freeze({
+    validate: validate,
+    sortRecords: sortRecords,
+    summarize: summarize,
+    periodRecords: periodRecords,
+    toCsv: toCsv
+  });
+});
+
+(() => {
+  'use strict';
+  const root = document.getElementById('pressure-app');
+  const D = globalThis.PressureData;
+  const demo = root.dataset.demo === 'true';
+  const KEY = 'pressure-diary-v1';
+  const fixedNow = new Date(2026,8,21,10,0);
+  const now = () => demo ? new Date(fixedNow) : new Date();
+  const fmtDate = d => new Date(d).toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+  const fmtTime = d => new Date(d).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+  const localInput = d => {const v = new Date(d);return new Date(v.getTime()-v.getTimezoneOffset()*60000).toISOString().slice(0,16);};
+  const escape = s => String(s == null ? '' : s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const sample = [[15,8,124,82,70],[16,8,121,79,68],[17,8,125,81,72],[18,8,119,77,66],[19,8,122,80,69],[20,20,120,78,67],[21,8,118,76,64]].map((v,i)=>({id:'demo-'+i,at:new Date(2026,8,v[0],v[1],30).toISOString(),sys:v[2],dia:v[3],pulse:v[4],note:i===6?'После отдыха':i===5?'Вечернее измерение':''}));
+  let records = demo ? sample : [];
+  let page = 'today', days = 7, editId = null, toast = '', storageError = '', confirmDelete = false, readFailed = false;
+  if (!demo) {try {const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved){if(!Array.isArray(saved.records)||!saved.records.every(r=>r && typeof r.id==='string' && Number.isInteger(r.sys) && Number.isInteger(r.dia) && Number.isInteger(r.pulse) && Number.isFinite(Date.parse(r.at))))throw new Error('Invalid diary format');records=saved.records;}}catch(e){readFailed=true;storageError='Не удалось прочитать дневник. Сохранение остановлено, чтобы не перезаписать ваши данные. Попробуйте перезапустить приложение.';}}
+  function persist(nextRecords=records){if(demo)return true;if(readFailed)return false;try{localStorage.setItem(KEY,JSON.stringify({records:nextRecords}));storageError='';return true;}catch(e){storageError='Не удалось сохранить запись. Возможно, на устройстве закончилось место.';return false;}}
+  function rememberView(){if(!demo)return;try{const p=window.openai?.setWidgetState?.({modelContent:null,privateContent:{page,days}});if(p?.catch)p.catch(()=>{});}catch(e){}}
+  function applySaved(s){const priv=s?.privateContent;if(['today','history','trends','settings'].includes(priv?.page))page=priv.page;if([7,30,90].includes(priv?.days))days=priv.days;}
+  if(demo){applySaved(window.openai?.widgetState);window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState){applySaved(e.detail.globals.widgetState);render();}});}
+  function chart(data){
+    const rows=D.sortRecords(data).slice().reverse();
+    if(!rows.length)return '<div class="bp-empty"><p>Здесь появится график ваших измерений</p></div>';
+    const values=rows.flatMap(r=>[r.sys,r.dia]);const low=Math.floor((Math.min(...values)-6)/10)*10, high=Math.ceil((Math.max(...values)+6)/10)*10;
+    const appWidth=Math.min(root.clientWidth||380,520);const width=Math.max(210,appWidth-(appWidth<=350?32:44)-32), height=145, left=31, right=width-12, top=14, bottom=116;
+    const minT=Date.parse(rows[0].at),maxT=Date.parse(rows[rows.length-1].at);
+    const x=r=>maxT===minT?(left+right)/2:left+(Date.parse(r.at)-minT)/(maxT-minT)*(right-left);
+    const y=v=>bottom-(v-low)/(high-low)*(bottom-top);
+    const ticks=[low,Math.round((low+high)/2),high];
+    const line=(key,cls)=>'<polyline class="'+cls+'" points="'+rows.map(r=>x(r).toFixed(1)+','+y(r[key]).toFixed(1)).join(' ')+'"/>'+rows.map(r=>'<circle cx="'+x(r).toFixed(1)+'" cy="'+y(r[key]).toFixed(1)+'" r="2.6" fill="var('+(key==='sys'?'--bp-accent':'--bp-second')+')"/>').join('');
+    const labels=rows.length===1?[rows[0]]:[rows[0],rows[Math.floor((rows.length-1)/2)],rows[rows.length-1]].filter((r,i,a)=>a.findIndex(t=>t.id===r.id)===i);
+    return '<svg class="bp-chart" viewBox="0 0 '+width+' '+height+'" role="img" aria-label="Давление по времени: верхнее — сплошная линия, нижнее — пунктирная. Значения в миллиметрах ртутного столба.">'+ticks.map(v=>'<line class="bp-grid" x1="'+left+'" x2="'+right+'" y1="'+y(v)+'" y2="'+y(v)+'"/><text x="0" y="'+(y(v)+4)+'">'+v+'</text>').join('')+line('sys','bp-sys')+line('dia','bp-dia')+labels.map((r,i)=>'<text x="'+x(r).toFixed(1)+'" y="138" text-anchor="'+(labels.length===1?'middle':i===0?'start':i===labels.length-1?'end':'middle')+'">'+escape(new Date(r.at).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'}))+'</text>').join('')+'</svg><div class="bp-chart-legend"><span><i class="bp-line-sample"></i>Верхнее</span><span><i class="bp-line-sample dia"></i>Нижнее</span></div>';
+  }
+  function row(r){return '<button class="bp-record cursor-interaction" data-edit="'+escape(r.id)+'" aria-label="Изменить измерение '+r.sys+' на '+r.dia+', '+escape(fmtDate(r.at)+' '+fmtTime(r.at))+'"><div><div class="bp-record-time">'+escape(fmtTime(r.at))+'</div><div class="bp-record-note">'+escape(r.note||'Без заметки')+'</div></div><div class="bp-record-values">'+r.sys+' <span class="bp-sub">/</span> '+r.dia+'<div class="bp-record-pulse">'+r.pulse+' уд/мин</div></div></button>';}
+  function header(title){return '<header class="bp-top"><div><div class="bp-title-small">МОЙ ЛИЧНЫЙ ДНЕВНИК</div><h1>'+title+'</h1></div><button class="bp-mark cursor-interaction" data-page="settings" aria-label="Данные и экспорт">♡</button></header>';}
+  function latest(r){return '<div class="bp-latest"><div class="bp-latest-top"><span class="bp-overline">Последнее измерение</span><span class="bp-small bp-sub"><i class="bp-dot"></i>'+escape(fmtTime(r.at))+'</span></div><div class="bp-reading">'+r.sys+'<span class="bp-slash">/</span>'+r.dia+'</div><div class="bp-reading-unit">мм рт. ст.</div><div class="bp-pulse-row"><div><span class="bp-heart" aria-hidden="true">♡</span><span class="bp-pulse">'+r.pulse+'</span><span class="bp-pulse-unit">уд/мин</span></div><span class="bp-time">'+escape(fmtDate(r.at))+'</span></div></div>';}
+  function today(){const sorted=D.sortRecords(records),last=sorted[0],recent=D.periodRecords(records,7,now());return header('Дневник давления')+'<div class="bp-toolbar"><h2>Сегодня</h2><span class="bp-date">'+escape(fmtDate(now()))+'</span></div>'+(last?latest(last):'<div class="bp-empty"><h2>Начнём с измерения</h2><p>Запишите давление и пульс. Вся история останется под рукой.</p></div>')+'<button class="bp-primary cursor-interaction" data-add><span class="bp-plus" aria-hidden="true">+</span>Записать измерение</button>'+(last?'<section class="bp-section"><div class="bp-section-heading"><h3>Последние 7 дней</h3><button class="bp-text-button cursor-interaction" data-page="trends">Динамика ↗</button></div><div class="bp-chart-panel"><div class="bp-chart-heading"><span>Давление, мм рт. ст.</span><span>'+recent.length+' изм.</span></div>'+chart(recent)+'</div></section><section class="bp-section"><div class="bp-section-heading"><h3>Последние записи</h3><button class="bp-text-button cursor-interaction" data-page="history">Все записи →</button></div>'+sorted.slice(0,2).map(row).join('')+'</section>':'<p class="bp-banner">Без аккаунта. Данные только на устройстве.</p>');}
+  function history(){let current='';return header('История')+'<div class="bp-toolbar"><span class="bp-sub bp-small">Измерений: '+records.length+'</span><button class="bp-text-button cursor-interaction" data-export '+(!records.length?'disabled':'')+'>Экспорт CSV ↗</button></div><button class="bp-primary cursor-interaction" data-add><span class="bp-plus" aria-hidden="true">+</span>Записать измерение</button>'+(!records.length?'<div class="bp-empty"><p>Ваши измерения появятся здесь</p></div>':D.sortRecords(records).map(r=>{const d=new Date(r.at).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});const head=d===current?'':'<div class="bp-group-date">'+escape(d)+'</div>';current=d;return head+row(r);}).join(''));}
+  function trends(){const data=D.periodRecords(records,days,now()),sum=D.summarize(data);return header('Динамика')+'<div class="bp-range" aria-label="Период графика">'+[7,30,90].map(n=>'<button class="cursor-interaction" data-days="'+n+'" aria-pressed="'+(days===n)+'">'+n+' дней</button>').join('')+'</div>'+(data.length?'<div class="bp-average"><div><strong>'+sum.sys+' / '+sum.dia+'</strong><p>Среднее давление, мм рт. ст.</p></div><div><strong>'+sum.pulse+'</strong><p>Пульс, уд/мин</p></div></div>':'')+'<div class="bp-chart-panel"><div class="bp-chart-heading"><span>Давление, мм рт. ст.</span><span>'+data.length+' изм.</span></div>'+chart(data)+'</div><div class="bp-settings-note">Средние значения рассчитаны по записям за выбранный период.</div><section class="bp-section"><div class="bp-section-heading"><h3>Измерения за период</h3></div>'+D.sortRecords(data).slice(0,10).map(r=>'<div class="bp-small bp-sub">'+escape(fmtDate(r.at))+'</div>'+row(r)).join('')+'</section>';}
+  function settings(){return header('Ваши данные')+'<section class="bp-section"><h3>Резервная копия</h3><button class="bp-secondary cursor-interaction" data-export '+(!records.length?'disabled':'')+'>Сохранить историю в CSV</button><p class="bp-settings-note">Дневник работает без интернета и хранит записи на этом устройстве. При удалении приложения записи удаляются. Экспортируйте историю, чтобы сохранить копию.</p><p class="bp-settings-note">Дневник давления · 1.0.1<br>Для записи измерений, без автоматической оценки здоровья.</p></section>';}
+  function form(){const r=records.find(r=>r.id===editId);return '<div class="bp-form-top"><button class="bp-back cursor-interaction" data-cancel>← Назад</button><span class="bp-small bp-sub">'+(r?'Изменить запись':'Новое измерение')+'</span></div><h1>'+ (r?'Ваша запись':'Какое давление?')+'</h1><p class="bp-sub bp-small" style="margin:10px 0 25px">Показания с экрана вашего тонометра</p><form class="bp-form" novalidate><div class="bp-form-grid"><label class="bp-field">Верхнее, мм рт. ст.<input name="sys" type="number" inputmode="numeric" min="50" max="300" step="1" placeholder="120" required value="'+(r?r.sys:'')+'"><span class="bp-field-hint" data-error="sys"></span></label><label class="bp-field">Нижнее, мм рт. ст.<input name="dia" type="number" inputmode="numeric" min="30" max="200" step="1" placeholder="80" required value="'+(r?r.dia:'')+'"><span class="bp-field-hint" data-error="dia"></span></label></div><label class="bp-field">Пульс, уд/мин<input name="pulse" type="number" inputmode="numeric" min="20" max="250" step="1" placeholder="70" required value="'+(r?r.pulse:'')+'"><span class="bp-field-hint" data-error="pulse"></span></label><label class="bp-field">Дата и время<input name="at" type="datetime-local" required value="'+localInput(r?r.at:now())+'"><span class="bp-field-hint" data-error="at"></span></label><label class="bp-field">Заметка · необязательно<textarea name="note" maxlength="500" placeholder="Например, после прогулки">'+escape(r?r.note:'')+'</textarea></label><div class="bp-error" role="alert" data-form-error></div><button class="bp-primary cursor-interaction" type="submit">'+(r?'Сохранить изменения':'Сохранить измерение')+'</button></form>'+(r?'<button class="bp-delete cursor-interaction" data-delete>Удалить запись</button>':'');}
+  function nav(){return '<nav class="bp-nav" aria-label="Основная навигация">'+[['today','⌂','Сегодня'],['history','≡','История'],['trends','↗','Динамика'],['settings','≡','Данные']].map(([id,glyph,label])=>'<button class="cursor-interaction" data-page="'+id+'" '+(page===id?'aria-current="page"':'')+'><span class="bp-nav-glyph" aria-hidden="true">'+glyph+'</span>'+label+'</button>').join('')+'</nav>';}
+  function render(){const functions={today,history,trends,settings,form};root.innerHTML='<div class="bp-shell">'+(demo?'<div class="bp-demo" style="padding-top:14px">Демонстрационные данные</div>':'')+(storageError?'<p class="bp-error" role="alert" style="padding-top:15px">'+escape(storageError)+'</p>':'')+(toast?'<div class="bp-toast" role="status">'+escape(toast)+'</div>':'')+functions[page]()+((page==='form'&&confirmDelete)?'<div class="bp-confirm" role="alert"><p>Удалить это измерение?</p><button class="bp-secondary cursor-interaction" data-keep>Оставить запись</button><button class="bp-primary cursor-interaction" data-confirm-delete>Удалить измерение</button></div>':'')+(page==='form'?'':nav())+'</div>'; }
+  root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
+    if(b.dataset.page){page=b.dataset.page;toast='';confirmDelete=false;render();rememberView();}
+    else if(b.hasAttribute('data-add')){editId=null;page='form';toast='';confirmDelete=false;render();}
+    else if(b.hasAttribute('data-edit')){editId=b.dataset.edit;page='form';toast='';confirmDelete=false;render();}
+    else if(b.hasAttribute('data-cancel')){page='today';confirmDelete=false;render();}
+    else if(b.dataset.days){days=Number(b.dataset.days);render();rememberView();}
+    else if(b.hasAttribute('data-export')){exportCsv();}
+    else if(b.hasAttribute('data-delete')){if(!confirmDelete){confirmDelete=true;root.querySelector('.bp-shell').insertAdjacentHTML('beforeend','<div class="bp-confirm" role="alert"><p>Удалить это измерение?</p><button class="bp-secondary cursor-interaction" data-keep>Оставить запись</button><button class="bp-primary cursor-interaction" data-confirm-delete>Удалить измерение</button></div>');}root.querySelector('[data-keep]')?.focus();}
+    else if(b.hasAttribute('data-keep')){confirmDelete=false;root.querySelector('.bp-confirm')?.remove();}
+    else if(b.hasAttribute('data-confirm-delete')){const next=records.filter(r=>r.id!==editId);if(persist(next)){records=next;page='history';editId=null;confirmDelete=false;toast='Измерение удалено';}render();}
+  });
+  root.addEventListener('submit',e=>{e.preventDefault();const f=e.target;const input=Object.fromEntries(new FormData(f));if(editId)input.id=editId;const result=D.validate(input,now());['sys','dia','pulse','at'].forEach(k=>{const el=f.elements[k];el.setAttribute('aria-invalid',String(!!result.errors[k]));const hint=f.querySelector('[data-error="'+k+'"]');hint.textContent=result.errors[k]||'';hint.classList.toggle('bp-error',!!result.errors[k]);});if(!result.ok){f.querySelector('[data-form-error]').textContent='Проверьте выделенные поля.';f.querySelector('[aria-invalid=true]')?.focus();return;}const next=[...records.filter(r=>r.id!==result.record.id),result.record];if(!persist(next)){f.querySelector('[data-form-error]').textContent=storageError;return;}records=next;page='today';toast=editId?'Изменения сохранены':'Измерение сохранено';editId=null;render();});
+  function exportCsv(){if(!records.length)return;if(demo){toast='В приложении история сохраняется в CSV. Здесь показан пример интерфейса.';render();return;}const csv=D.toCsv(records);if(window.Android?.saveCsv){window.Android.saveCsv(csv);return;}const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='дневник-давления.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
+  root.pressureDiary={getState:()=>({page,count:records.length})};
+  window.pressureBack=()=>{if(page!=='today'){page='today';editId=null;confirmDelete=false;render();return true;}return false;};
+  render();
+  let lastWidth=root.clientWidth;
+  if(globalThis.ResizeObserver)new ResizeObserver(()=>{if(lastWidth!==root.clientWidth){lastWidth=root.clientWidth;if(page==='today'||page==='trends')render();}}).observe(root);
+})();
+
+</script>
+
+</body></html>

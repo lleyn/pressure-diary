@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const base = path.resolve(import.meta.dirname, '..');
+const assets = path.join(base, 'android/app/src/main/assets');
+const target = process.argv[2];
+if (!target) throw new Error('Pass the absolute visualization output path');
+const css = fs.readFileSync(path.join(assets,'app.css'),'utf8').replace('*{box-sizing:border-box}body{margin:0;background:#f4f7f4}button,input,textarea,select{font:inherit}button{touch-action:manipulation}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #6896d0;outline-offset:3px}', '#pressure-app *{box-sizing:border-box}#pressure-app button,#pressure-app input,#pressure-app textarea,#pressure-app select{font:inherit}#pressure-app button{touch-action:manipulation}');
+const data = fs.readFileSync(path.join(assets,'data.js'),'utf8');
+const app = fs.readFileSync(path.join(assets,'app.js'),'utf8');
+const scaffold = fs.readFileSync(path.join(base,'ui/preview-shell.html'),'utf8');
+const fragment = scaffold.replace('/* APP_CSS */', css).replace('/* APP_DATA */', data).replace('/* APP_JS */', app);
+fs.mkdirSync(path.dirname(target),{recursive:true});
+fs.writeFileSync(target,fragment);
+fs.writeFileSync(path.join(base,'ui/preview.html'),'<!doctype html>\n<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Дневник давления</title><style>body{margin:0;padding:28px 16px;background:#ebece8;color-scheme:light}</style></head><body>\n'+fragment+'\n</body></html>');
+console.log('Preview generated:',target);
